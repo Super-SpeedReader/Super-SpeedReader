@@ -23,6 +23,7 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px; /* Added padding to ensure text doesn't hit screen edges */
         }
 
         .reader-container {
@@ -155,9 +156,32 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        /* ADDED STYLING FOR NEW CONTENT */
+        .top-description {
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        .top-description h1 { color: var(--accent-red); margin-bottom: 5px; }
+        
+        .long-description {
+            max-width: 600px;
+            width: 80%;
+            margin-top: 40px;
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+        .long-description h2 { color: var(--accent-red); margin-top: 25px; }
+        .long-description h3 { color: #fff; margin-bottom: 5px; }
     </style>
 </head>
 <body>
+
+<div class="top-description">
+    <h1>Super SpeedReader</h1>
+    <p>The high-performance RSVP reading tool designed to help you consume text faster by focusing your eyes on a single point.</p>
+</div>
 
 <div class="reader-container">
     <div id="display-box"><span id="word-output">Ready...</span></div>
@@ -184,6 +208,29 @@
             <button onclick="reset()">Reset</button>
         </div>
     </div>
+</div>
+
+<div class="long-description">
+    <h2>Why Use Super SpeedReader?</h2>
+    <p>In today's fast-paced world, the ability to process information quickly is a superpower. Super SpeedReader utilizes <strong>RSVP (Rapid Serial Visual Presentation)</strong> technology to streamline your reading experience. By displaying words one at a time in a fixed position, we eliminate the physical act of moving your eyes across a page, which is the primary bottleneck in reading speed.</p>
+
+    <h2>How it Helps Everyday</h2>
+    <p>Whether you are a student tackling long research papers, a professional catching up on industry reports, or a casual reader finishing a digital novel, RSVP reading allows you to finish your content in half the time. It reduces eye fatigue and helps increase overall concentration by forcing the brain to stay locked onto the stream of information.</p>
+
+    <h2>Key Features & Customization</h2>
+    <ul>
+        <li><strong>Focal Point Anchoring:</strong> Our tool highlights the second letter of every word in red. This acts as a visual anchor, targeting the "Optimal Recognition Point" of the word for instant processing.</li>
+        <li><strong>Full Speed Control:</strong> You have complete <strong>customization</strong> over the speed. Adjust the "Words Per Second" to match your comfort level as you train your brain to go faster.</li>
+        <li><strong>Progress Tracking:</strong> The visual progress bar keeps you informed of exactly how much text is remaining.</li>
+    </ul>
+
+    <h3>How to Use</h3>
+    <ol>
+        <li>Copy the text you want to read.</li>
+        <li>Paste it into the text area above.</li>
+        <li>Set your preferred speed (we recommend starting at 2 or 3 WPS).</li>
+        <li>Click <strong>Load & Start</strong> and keep your eyes focused on the red letters!</li>
+    </ol>
 </div>
 
 <footer>
@@ -250,6 +297,10 @@
         currentIndex = 0;
         isPaused = false;
         document.getElementById('pause-btn').innerText = "Pause";
+        
+        // Added this line so the first word displays immediately
+        updateDisplay(); 
+        
         run();
     }
 
