@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super SpeedReader</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #000000; 
+            --accent-red: #ff4444;
+            --ui-text: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--ui-text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .reader-container {
+            background: var(--container-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        #display-box {
+            background: #ffffff;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            font-size: 3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            color: var(--text-color);
+        }
+
+        .letter-red { color: var(--accent-red); }
+
+        .controls, .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        textarea {
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background: #444;
+            color: white;
+            transition: 0.2s;
+        }
+
+        button:hover { background: #666; }
+        
+        #progress-container {
+            width: 100%;
+            background: #333;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-red);
+            border-radius: 4px;
+            transition: width 0.1s;
+        }
+
+        .settings {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Footer & Privacy Styling */
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #777;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--accent-red);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Privacy Modal Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+        }
+
+        .modal-content {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #444;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .close {
+            color: #ff4444;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="reader-container">
+    <div id="display-box"><span id="word-output">Ready...</span></div>
+    
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="input-area" id="input-section">
+        <textarea id="text-input" rows="5" placeholder="Paste your text here..."></textarea>
+        <button onclick="startReader()">Load & Start</button>
+    </div>
+
+    <div class="controls">
+        <div class="settings">
+            <label>Speed (Words/Sec): </label>
+            <input type="number" id="speed-input" value="2" min="0.1" step="0.1" style="width: 50px;">
+        </div>
+        
+        <div class="buttons">
+            <button onclick="step(-1)">Prev</button>
+            <button id="pause-btn" onclick="togglePause()">Pause</button>
+            <button onclick="step(1)">Next</button>
+            <button onclick="reset()">Reset</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 Super SpeedReader. All Rights Reserved. <br>
+    <a onclick="openPrivacy()">Privacy Policy & Disclaimer</a>
+</footer>
+
+<div id="privacyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closePrivacy()">&times;</span>
+    <h2 style="color:var(--accent-red)">Privacy Policy</h2>
+    <p><strong>Last updated: March 06, 2026</strong></p>
+    <p>Super SpeedReader is built as a client-side tool. This means:</p>
+    <ul>
+        <li><strong>No Data Collection:</strong> We do not collect, store, or share any text you paste into the reader. All processing happens locally in your own browser.</li>
+        <li><strong>No Accounts:</strong> You do not need an account to use this service.</li>
+        <li><strong>Cookies:</strong> We do not use first-party cookies to track you. (Note: Third-party ads may use their own cookies).</li>
+    </ul>
+
+    <h2 style="color:var(--accent-red)">Disclaimer & Liability</h2>
+    <p>By using this website, you agree to the following:</p>
+    <ul>
+        <li><strong>"As Is" Basis:</strong> This tool is provided for educational purposes without any warranties.</li>
+        <li><strong>No Liability:</strong> Under no circumstances shall Super SpeedReader or its owner be held liable for any data loss, browser crashes, security issues (including hacks or leaks) or any other problems that occur while using this site or third-party links.</li>
+        <li><strong>External Links:</strong> We are not responsible for the content or safety of any websites linked to from this page.</li>
+        <li><strong>Source Code:</strong> The source code of this website must not be copied and published, made into another website, project or anything similar. It can however be observed an learned from.</li>
+        <li><strong>Action Against Us:</strong> No action, legal or otherwise(public defamation or anyhting similar) may be taken against this website or it's owner and the provided e-mail address.</li>
+    </ul>
+    
+    <p><strong>Contact:</strong> xyz603101@gmail.com</p>
+    <button onclick="closePrivacy()" style="width:100%; margin-top:20px; background:var(--accent-red)">Close</button>
+  </div>
+</div>
+
+<script>
+    let words = [];
+    let currentIndex = 0;
+    let isPaused = true;
+    let timer = null;
+
+    function formatWord(word) {
+        if (!word) return "";
+        if (word.length < 2) return word;
+        let first = word.charAt(0);
+        let second = word.charAt(1);
+        let rest = word.slice(2);
+        return `${first}<span class="letter-red">${second}</span>${rest}`;
+    }
+
+    function updateDisplay() {
+        const output = document.getElementById('word-output');
+        const bar = document.getElementById('progress-bar');
+        if (words.length > 0 && currentIndex < words.length) {
+            output.innerHTML = formatWord(words[currentIndex]);
+            let progress = ((currentIndex + 1) / words.length) * 100;
+            bar.style.width = progress + "%";
+        }
+    }
+
+    function startReader() {
+        const rawText = document.getElementById('text-input').value;
+        words = rawText.trim().split(/\s+/).filter(w => w.length > 0);
+        if (words.length === 0) return;
+        currentIndex = 0;
+        isPaused = false;
+        document.getElementById('pause-btn').innerText = "Pause";
+        run();
+    }
+
+    function run() {
+        clearInterval(timer);
+        if (isPaused || currentIndex >= words.length) return;
+        const wps = parseFloat(document.getElementById('speed-input').value) || 2;
+        const interval = 1000 / wps;
+        timer = setInterval(() => {
+            if (currentIndex < words.length - 1) {
+                currentIndex++;
+                updateDisplay();
+            } else {
+                clearInterval(timer);
+                isPaused = true;
+                document.getElementById('pause-btn').innerText = "Play";
+            }
+        }, interval);
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        document.getElementById('pause-btn').innerText = isPaused ? "Play" : "Pause";
+        if (!isPaused) run();
+        else clearInterval(timer);
+    }
+
+    function step(direction) {
+        isPaused = true;
+        clearInterval(timer);
+        document.getElementById('pause-btn').innerText = "Play";
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= words.length) currentIndex = words.length - 1;
+        updateDisplay();
+    }
+
+    function reset() {
+        currentIndex = 0;
+        isPaused = true;
+        clearInterval(timer);
+        document.getElementById('pause-btn').innerText = "Play";
+        document.getElementById('word-output').innerText = "Ready...";
+        document.getElementById('progress-bar').style.width = "0%";
+    }
+
+    // Modal logic
+    function openPrivacy() { document.getElementById("privacyModal").style.display = "block"; }
+    function closePrivacy() { document.getElementById("privacyModal").style.display = "none"; }
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("privacyModal")) closePrivacy();
+    }
+</script>
+
+</body>
+</html>
